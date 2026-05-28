@@ -18,6 +18,11 @@ class MessagesController < ApplicationController
     L'utilisateur vient te parler de son humeur, de sa journée, de sa fatigue, de ses envies ou de l'ambiance qu'il recherche.
     Ton but est de comprendre son état émotionnel avant de lui recommander une boisson.
 
+    Mémoire de conversation :
+    Tu dois tenir compte de tous les messages précédents de cette conversation.
+    Si l'utilisateur donne une information personnelle dans ce chat, comme son prénom, son nom, une préférence, une contrainte ou une envie, tu dois pouvoir la réutiliser plus tard dans la même conversation.
+    Si l'information est présente dans l'historique, ne dis pas que tu ne la sais pas.
+
     Règle importante :
     Ne recommande jamais de boisson dès le premier message.
     Au premier message, écoute, reformule brièvement et pose une seule question courte.
@@ -100,7 +105,7 @@ class MessagesController < ApplicationController
 
       response = ruby_llm_chat
                  .with_instructions(instructions)
-                 .ask(@message.content)
+                 .ask(message_with_conversation_history)
 
       @assistant_message = Message.create!(
         role: "bartender",
@@ -227,6 +232,30 @@ class MessagesController < ApplicationController
         - Garde ton ton de barman : flegmatique, humain, un peu drôle à froid.
       INSTRUCTION
     end
+  end
+
+  def message_with_conversation_history
+    previous_messages = @chat.messages
+                             .where.not(id: @message.id)
+                             .where.not(content: [nil, ""])
+                             .order(:created_at)
+
+    history = previous_messages.map do |message|
+      speaker = message.role == "user" ? "Utilisateur" : "The Bartender"
+
+      "#{speaker} : #{message.content}"
+    end.join("\n\n")
+
+    <<~PROMPT
+      Voici l'historique de la conversation jusqu'ici :
+
+      #{history.presence || 'Aucun message précédent.'}
+
+      Message actuel de l'utilisateur :
+      #{@message.content}
+
+      Réponds au message actuel en tenant compte de tout l'historique ci-dessus.
+    PROMPT
   end
 
   def cocktail_recommendation_allowed?
