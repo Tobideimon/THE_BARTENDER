@@ -8,10 +8,20 @@
 
   position: relative;
   overflow-x: hidden;
+  isolation: isolate;
+
+  background: none;
+}
+
+.chat-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
 
   background:
     linear-gradient(
-      rgba(0, 0, 0, 0.0),
+      rgba(0, 0, 0, 0),
       rgba(0, 0, 0, 0.20)
     ),
     asset-url("bill.jpg");
@@ -20,14 +30,12 @@
   background-position: 1% center;
   background-repeat: no-repeat;
 
-  /* AJOUTE ÇA */
-  background-attachment: fixed;
+  pointer-events: none;
 }
 
 /* GLOBAL LAYOUT */
 
 .chat-header,
-.cocktail-recommendation,
 .messages-container {
   position: relative;
   z-index: 2;
@@ -87,6 +95,7 @@
 .messages-container {
   width: 100%;
   overflow-y: auto;
+
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -108,16 +117,22 @@
   justify-content: flex-end;
   padding-left: 52%;
 }
+
 #messages-bottom {
   height: 140px;
   flex-shrink: 0;
 }
+
 .message-bubble {
   max-width: 420px;
   padding: 18px 22px;
 
   border-radius: 22px;
   position: relative;
+
+  color: #f3e7d0;
+  font-size: 15px;
+  line-height: 1.7;
 
   backdrop-filter: blur(10px);
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.35);
@@ -175,52 +190,70 @@
 
 .message-bubble p {
   margin: 0;
-  line-height: 1.7;
+
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
 
-/* COCKTAIL */
+/* COCKTAIL CARD INSIDE BILL MESSAGE */
 
-.cocktail-message-bubble {
-  max-width: 70%;
+.chat-page .cocktail-card-inline {
+  margin-top: 14px;
+
+  color: #f3e7d0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
 }
 
-.cocktail-recommendation-image {
+.chat-page .cocktail-card-inline .cocktail-recommendation-image {
   width: 100%;
-  max-height: 360px;
+  aspect-ratio: 1 / 1;
+  height: auto;
   object-fit: cover;
-
-  border-radius: 18px;
-  margin: 12px 0 18px;
-}
-
-.cocktail-message-bubble h2 {
-  margin: 0 0 18px;
-
-  font-size: 26px;
-  font-weight: 400;
-  color: #f3e7d0;
-}
-
-.cocktail-section {
-  margin-top: 16px;
-}
-
-.cocktail-section strong {
   display: block;
-  margin-bottom: 8px;
 
-  color: #d6b07a;
+  margin: 10px 0 12px;
+  border-radius: 14px;
 }
 
-.cocktail-text,
-.cocktail-text p,
-.cocktail-message-bubble p {
-  color: #f3e7d0;
-  line-height: 1.7;
+.chat-page .cocktail-card-inline h2 {
+  margin: 12px 0 10px;
+
+  color: #f3e7d0 !important;
+  font-size: inherit !important;
+  font-weight: 600;
+  line-height: 1.25 !important;
 }
 
-.cocktail-text p {
-  margin: 0 0 8px;
+.chat-page .cocktail-card-inline p,
+.chat-page .cocktail-card-inline .cocktail-text,
+.chat-page .cocktail-card-inline .cocktail-text p,
+.chat-page .cocktail-card-inline .cocktail-section,
+.chat-page .cocktail-card-inline .cocktail-section p {
+  color: #f3e7d0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+.chat-page .cocktail-card-inline strong {
+  display: block;
+  margin-bottom: 5px;
+
+  color: #d6b07a !important;
+  font-size: 0.85em !important;
+  font-weight: 700;
+  line-height: 1.25 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.chat-page .cocktail-card-inline .cocktail-section {
+  margin-top: 12px;
+}
+
+.chat-page .cocktail-card-inline .cocktail-text p {
+  margin: 0 0 6px;
 }
 
 /* INPUT FIXED EN BAS */
@@ -231,7 +264,7 @@
   bottom: 0;
 
   width: 100%;
-  z-index: 100;
+  z-index: 9000;
 
   padding: 24px 32px;
 
@@ -265,6 +298,10 @@
 .chat-form .mb-3 {
   flex: 1;
   width: 100%;
+  margin-bottom: 0 !important;
+
+  display: flex;
+  align-items: center;
 }
 
 .chat-input {
@@ -288,7 +325,7 @@
 }
 
 .chat-submit-btn {
-  height: 54px;
+  height: 68px;
 
   padding: 0 24px;
 
@@ -301,6 +338,10 @@
   font-weight: 700;
 
   transition: 0.2s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chat-submit-btn:hover {
@@ -308,29 +349,64 @@
   transform: translateY(-1px);
 }
 
-/* FORCE COCKTAIL TEXT COLOR */
+/* =========================
+   MOBILE CHAT
+   ========================= */
 
-.chat-page .cocktail-message-bubble,
-.chat-page .cocktail-message-bubble h2,
-.chat-page .cocktail-message-bubble p,
-.chat-page .cocktail-message-bubble .cocktail-text,
-.chat-page .cocktail-message-bubble .cocktail-text p {
-  color: #f3e7d0 !important;
-}
-
-.chat-page .cocktail-message-bubble .cocktail-section strong {
-  color: #d6b07a !important;
-}
-
-/* MOBILE */
-
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .chat-page {
-    padding: 24px 16px 0;
+    min-height: 100dvh;
+    padding: 24px 16px 0 !important;
+
+    background: none !important;
+    position: relative;
+    isolation: isolate;
+  }
+
+  .chat-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+
+    background:
+      linear-gradient(
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0.20)
+      ),
+      asset-url("bill.jpg");
+
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+
+    pointer-events: none;
+  }
+
+  .chat-header {
+    margin-bottom: 24px;
+  }
+
+  .back-link {
+    margin-bottom: 22px;
+  }
+
+  .chat-subtitle {
+    font-size: 11px;
+    letter-spacing: 6px;
+  }
+
+  .chat-title-block h1 {
+    font-size: 34px;
   }
 
   .chat-body {
-    padding-bottom: 170px;
+    padding-bottom: 210px !important;
+  }
+
+  .messages-container {
+    gap: 16px;
+    margin-bottom: 28px;
   }
 
   .assistant-row,
@@ -339,24 +415,159 @@
     padding-right: 0;
   }
 
+  .assistant-row {
+    justify-content: flex-start;
+  }
+
+  .user-row {
+    justify-content: flex-end;
+  }
+
   .message-bubble {
-    max-width: 90%;
+    padding: 10px 12px;
+
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .assistant-bubble {
+    width: 42vw;
+    max-width: 190px;
+  }
+
+  .user-bubble {
+    width: 52vw;
+    max-width: 230px;
+  }
+
+  .message-role {
+    margin-bottom: 7px;
+
+    font-size: 9px;
+    letter-spacing: 1.6px;
+  }
+
+  .message-bubble p {
+    margin: 0;
+
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .assistant-bubble::after {
+    right: -10px;
+    border-top-width: 9px;
+    border-bottom-width: 9px;
+    border-left-width: 12px;
+  }
+
+  /* MOBILE COCKTAIL CARD INSIDE BILL MESSAGE */
+
+  .chat-page .cocktail-card-inline {
+    margin-top: 10px;
+
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  .chat-page .cocktail-card-inline .cocktail-recommendation-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    object-fit: cover;
+
+    margin: 7px 0 9px;
+    border-radius: 9px;
+  }
+
+  .chat-page .cocktail-card-inline h2 {
+    margin: 8px 0 8px;
+
+    font-size: inherit !important;
+    line-height: 1.25 !important;
+  }
+
+  .chat-page .cocktail-card-inline strong {
+    margin-bottom: 4px;
+
+    font-size: 0.8em !important;
+    line-height: 1.25 !important;
+  }
+
+  .chat-page .cocktail-card-inline .cocktail-section {
+    margin-top: 9px;
+  }
+
+  .chat-page .cocktail-card-inline .cocktail-text p {
+    margin: 0 0 5px;
+
+    font-size: inherit !important;
+    line-height: inherit !important;
   }
 
   .chat-input-container {
-    padding: 18px 12px;
+    position: fixed;
+    right: 0;
+    bottom: calc(58px + env(safe-area-inset-bottom));
+    left: 0;
+    z-index: 9000;
+
+    box-sizing: border-box;
+    width: 100%;
+
+    padding: 10px 16px 8px;
+
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.82),
+      rgba(0, 0, 0, 0.45),
+      rgba(0, 0, 0, 0)
+    );
   }
 
   .chat-form {
     width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+
+    display: flex;
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+
+    box-sizing: border-box;
+    padding: 12px;
+
+    border-radius: 20px;
+  }
+
+  .chat-form .mb-3 {
+    width: 100%;
+    margin-bottom: 0 !important;
+  }
+
+  .chat-input {
+    width: 100% !important;
+    min-height: 64px !important;
+    max-height: 96px !important;
+
+    box-sizing: border-box;
+    padding: 14px 16px !important;
+
+    border-radius: 16px !important;
+
+    font-size: 16px !important;
+    line-height: 1.35 !important;
   }
 
   .chat-submit-btn {
     width: 100%;
-  }
-   .chat-page {
-    background-attachment: scroll;
+    height: 48px;
+    min-height: 48px;
+
+    border-radius: 15px;
+
+    font-size: 17px;
+    font-weight: 800;
   }
 }
