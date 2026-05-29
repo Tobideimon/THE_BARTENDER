@@ -1,29 +1,48 @@
 <% if chat.cocktail.present? %>
-  <div class="message-row assistant-row">
-    <div class="message-bubble assistant-bubble cocktail-message-bubble">
-      <div class="message-role">The Bartender</div>
+  <div class="cocktail-card cocktail-card-slide-in"
+       data-controller="cocktail-card"
+       data-chat-id="<%= chat.id %>">
+    <div class="cocktail-card-header">
+      <span class="cocktail-card-label">Recommandation</span>
+      <h2><%= chat.cocktail.name %></h2>
+      <% if chat.cocktail.mood.present? %>
+        <p class="cocktail-card-mood"><%= chat.cocktail.mood.capitalize %></p>
+      <% end %>
+    </div>
 
-      <% if chat.cocktail.image_url.present? %>
+    <% if chat.cocktail.image_url.present? %>
+      <div class="cocktail-card-image">
         <%= image_tag chat.cocktail.image_url,
                       alt: chat.cocktail.name,
-                      class: "cocktail-recommendation-image" %>
-      <% end %>
+                      class: "cocktail-card-img" %>
+      </div>
+    <% end %>
 
-      <h2><%= chat.cocktail.name %></h2>
-
-      <div class="cocktail-section">
-        <strong>Ingrédients</strong>
-        <div class="cocktail-text">
+    <div class="cocktail-card-details">
+      <div class="cocktail-card-section">
+        <h4>Ingrédients</h4>
+        <div class="cocktail-card-text">
           <%= simple_format(chat.cocktail.ingredients) %>
         </div>
       </div>
 
-      <div class="cocktail-section">
-        <strong>Recette</strong>
-        <div class="cocktail-text">
+      <div class="cocktail-card-section">
+        <h4>Recette</h4>
+        <div class="cocktail-card-text">
           <%= simple_format(chat.cocktail.recipe) %>
         </div>
       </div>
+    </div>
+
+    <div class="cocktail-card-actions">
+      <button class="cocktail-card-btn cocktail-card-accept"
+              data-action="click->cocktail-card#accept">
+        Ajouter à mes cocktails
+      </button>
+      <button class="cocktail-card-btn-decline"
+              data-action="click->cocktail-card#decline">
+        Non merci
+      </button>
     </div>
   </div>
 <% end %>

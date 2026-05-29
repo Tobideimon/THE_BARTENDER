@@ -1,41 +1,34 @@
 <div class="chat-page">
   <%= turbo_stream_from @chat %>
-
   <div class="chat-header">
     <%= link_to "← Mes conversations", chats_path, class: "back-link" %>
-
     <div class="chat-title-block">
       <span class="chat-subtitle">Conversation</span>
       <h1><%= @chat.title %></h1>
     </div>
   </div>
-
   <div class="chat-body">
     <div id="messages" class="messages-container">
       <% if @chat.messages.any? %>
-
         <%= render "messages/messages", messages: @chat.messages.order(:created_at, :id) %>
-
-        <% if @chat.cocktail.present? %>
-          <%= render "chats/cocktail_recommendation", chat: @chat %>
-        <% end %>
-
       <% else %>
-
         <div class="message-row assistant-row">
           <div class="message-bubble assistant-bubble">
             <div class="message-role">The Bartender</div>
             <p>Bonjour, qu'est-ce que je peux faire pour vous ?</p>
           </div>
         </div>
-
       <% end %>
-
       <div id="messages-bottom"></div>
     </div>
-
     <div class="chat-input-container">
       <%= render "messages/form", chat: @chat, message: @message %>
     </div>
+  </div>
+
+  <div id="cocktail-card-container" class="cocktail-card-container">
+    <% if @chat.cocktail.present? %>
+      <%= render "chats/cocktail_recommendation", chat: @chat %>
+    <% end %>
   </div>
 </div>
